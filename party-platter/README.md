@@ -8,3 +8,8 @@ On the Mac (temp venv with pillow numpy playwright; `python -m playwright instal
     python src/build.py out final photo DSC04392_clean.png      # PLATTER_W / PLATTER_BOTTOM env vars move the photo
     python src/render.py out/MODU-Bistro_party-platter_A2_final.svg out/A2.pdf
     python src/render.py out/MODU-Bistro_party-platter_IG-4x5_final.svg out/IG.jpg 1080
+
+IG carousel (close-ups, 1080x1350, layered SVG per slide):
+
+    python src/carousel.py spec.json carousel      # spec format in the header of carousel.py
+    python src/render.py carousel/MODU-Bistro_party-platter_carousel_01.svg carousel/01.jpg 1080

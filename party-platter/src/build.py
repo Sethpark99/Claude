@@ -6,9 +6,9 @@ import numpy as np
 from PIL import Image, ImageFont
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT, VER = sys.argv[1], sys.argv[2]
-MODE = sys.argv[3] if len(sys.argv) > 3 else 'guides'   # guides | clean | phone | photo
-CUT = sys.argv[4] if len(sys.argv) > 4 else os.path.join(HERE, 'steamer_cutout.png')
+OUT, VER = (sys.argv[1:3] + ['out', 'v'])[:2] if __name__ == '__main__' else ('out', 'v')
+MODE = sys.argv[3] if len(sys.argv) > 3 and __name__ == '__main__' else 'guides'   # guides | clean | phone | photo
+CUT = sys.argv[4] if len(sys.argv) > 4 and __name__ == '__main__' else os.path.join(HERE, 'steamer_cutout.png')
 PW = float(os.environ.get('PLATTER_W', 845))       # platter width in ref px (cut-out bbox width)
 PB = float(os.environ.get('PLATTER_BOTTOM', 995))  # cut-out bottom edge in ref px
 GUIDES = MODE == 'guides'
@@ -163,5 +163,6 @@ def build(W, H, unit_w, unit_h, name, tex_px):
     os.makedirs(OUT, exist_ok=True)
     p = os.path.join(OUT, f'MODU-Bistro_party-platter_{name}_{VER}.svg'); open(p, 'w').write(svg); print(p)
 
-build(4200, 5940, '420mm', '594mm', 'A2', 2400)    # 1 unit = 0.1 mm
-build(1080, 1350, '1080px', '1350px', 'IG-4x5', 1080)
+if __name__ == '__main__':
+    build(4200, 5940, '420mm', '594mm', 'A2', 2400)    # 1 unit = 0.1 mm
+    build(1080, 1350, '1080px', '1350px', 'IG-4x5', 1080)
