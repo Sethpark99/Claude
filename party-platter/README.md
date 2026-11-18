@@ -13,3 +13,7 @@ IG carousel (close-ups, 1080x1350, layered SVG per slide):
 
     python src/carousel.py spec.json carousel      # spec format in the header of carousel.py
     python src/render.py carousel/MODU-Bistro_party-platter_carousel_01.svg carousel/01.jpg 1080
+
+Reshape the steamer toward the reference (shallow tray, higher camera):
+
+    python src/warp_cutout.py DSC04392_clean.png shallow.png --wall <front wall px> --squash 0.35 [--vstretch 1.12] [--keystone 1.06]
