@@ -12,7 +12,10 @@ CUT = sys.argv[4] if len(sys.argv) > 4 and __name__ == '__main__' else os.path.j
 PW = float(os.environ.get('PLATTER_W', 845))       # platter width in ref px (cut-out bbox width)
 PB = float(os.environ.get('PLATTER_BOTTOM', 995))  # cut-out bottom edge in ref px
 CROPB = float(os.environ.get('CROP_BOTTOM', 0))     # fraction of the cut-out height cut off at the bottom (steamer wall)
-FADE = float(os.environ.get('FADE', 0.12))         # with CROP_BOTTOM: bottom fraction that fades out into the background
+FADE = float(os.environ.get('FADE', 0.12))
+DX = float(os.environ.get('PLATTER_DX', 0))        # shift right (ref px) so the steamer rim, not the lettuce, is centred
+GLOW = float(os.environ.get('GLOW', 0))            # 0-1 warm glow behind the platter (studio-light feel)
+SHADOW = float(os.environ.get('SHADOW', 1))        # shadow strength multiplier         # with CROP_BOTTOM: bottom fraction that fades out into the background
 GUIDES = MODE == 'guides'
 
 RW, RH = 880, 1209                                  # reference size
@@ -135,12 +138,17 @@ def build(W, H, unit_w, unit_h, name, tex_px):
             ramp = np.linspace(1, 0, fh) ** 1.4; a[-fh:] *= ramp[:, None]
             im.putalpha(Image.fromarray(a.astype(np.uint8)))
         ar = im.size[1] / im.size[0]
-        pw = PW * k; phh = pw * ar; px = X(437) - pw / 2; py = Y(PB) - phh
+        cxp = X(437 + DX); pw = PW * k; phh = pw * ar; px = cxp - pw / 2; py = Y(PB) - phh
         tw = min(im.size[0], 3600) if W > 2000 else 1200
         im = im.resize((tw, round(tw * ar)), Image.LANCZOS)
-        L.append('<g id="05_PHOTO_platter">'
-                 + ('' if CROPB > 0 else f'<ellipse id="photo_shadow" cx="{X(437):.1f}" cy="{Y(PB - 12):.1f}" rx="{pw*0.50:.1f}" ry="{38*k:.1f}" fill="url(#shadow)"/>')
-                 + f'<image id="photo_platter_cutout" x="{px:.1f}" y="{py:.1f}" width="{pw:.1f}" height="{phh:.1f}" href="data:image/png;base64,{b64(im=im, fmt="PNG")}"/></g>')
+        g = ['<g id="05_PHOTO_platter">']
+        if GLOW:
+            g.append(f'<ellipse id="photo_glow" cx="{cxp:.1f}" cy="{py + phh*0.45:.1f}" rx="{pw*0.62:.1f}" ry="{phh*0.62:.1f}" fill="url(#glow)" opacity="{GLOW:.2f}"/>')
+        if CROPB == 0 and SHADOW:
+            g.append(f'<ellipse id="photo_shadow_ambient" cx="{cxp:.1f}" cy="{Y(PB - 6):.1f}" rx="{pw*0.53:.1f}" ry="{46*k:.1f}" fill="url(#shadow)" opacity="{min(1, 0.85*SHADOW):.2f}"/>')
+            g.append(f'<ellipse id="photo_shadow_contact" cx="{cxp:.1f}" cy="{Y(PB - 10):.1f}" rx="{pw*0.45:.1f}" ry="{14*k:.1f}" fill="url(#shadow)" opacity="{min(1, 0.9*SHADOW):.2f}"/>')
+        g.append(f'<image id="photo_platter_cutout" x="{px:.1f}" y="{py:.1f}" width="{pw:.1f}" height="{phh:.1f}" href="data:image/png;base64,{b64(im=im, fmt="PNG")}"/></g>')
+        L.append(''.join(g))
     else:
         L.append('<g id="05_PHOTO_platter"></g>')
 
@@ -164,6 +172,7 @@ def build(W, H, unit_w, unit_h, name, tex_px):
     svg = f'''<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="{unit_w}" height="{unit_h}" viewBox="0 0 {W} {H}">
 <defs><style>{style}</style>
 <linearGradient id="gold" gradientUnits="userSpaceOnUse" x1="{X(160):.0f}" y1="0" x2="{X(730):.0f}" y2="0"><stop offset="0" stop-color="{GOLD[0]}"/><stop offset="0.5" stop-color="{GOLD[1]}"/><stop offset="1" stop-color="{GOLD[2]}"/></linearGradient>
+<radialGradient id="glow"><stop offset="0" stop-color="#8E1A0C" stop-opacity="0.9"/><stop offset="0.55" stop-color="#74100A" stop-opacity="0.45"/><stop offset="1" stop-color="#5A0202" stop-opacity="0"/></radialGradient>
 <radialGradient id="shadow"><stop offset="0" stop-color="#000" stop-opacity="0.6"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
 </defs>
 {chr(10).join(L)}
