@@ -11,6 +11,8 @@ MODE = sys.argv[3] if len(sys.argv) > 3 and __name__ == '__main__' else 'guides'
 CUT = sys.argv[4] if len(sys.argv) > 4 and __name__ == '__main__' else os.path.join(HERE, 'steamer_cutout.png')
 PW = float(os.environ.get('PLATTER_W', 845))       # platter width in ref px (cut-out bbox width)
 PB = float(os.environ.get('PLATTER_BOTTOM', 995))  # cut-out bottom edge in ref px
+CROPB = float(os.environ.get('CROP_BOTTOM', 0))     # fraction of the cut-out height cut off at the bottom (steamer wall)
+FADE = float(os.environ.get('FADE', 0.12))         # with CROP_BOTTOM: bottom fraction that fades out into the background
 GUIDES = MODE == 'guides'
 
 RW, RH = 880, 1209                                  # reference size
@@ -126,13 +128,19 @@ def build(W, H, unit_w, unit_h, name, tex_px):
     if MODE in ('phone', 'photo'):
         # cut-out PNG: trimmed to its alpha bbox, centred, bottom edge on the reference rim line
         im = Image.open(CUT).convert('RGBA'); im = im.crop(im.split()[3].point(lambda a: 255 if a > 8 else 0).getbbox())
+        if CROPB > 0:
+            # trim the steamer's lower wall and feather the cut so it melts into the background
+            im = im.crop((0, 0, im.size[0], round(im.size[1] * (1 - CROPB))))
+            fh = max(1, round(im.size[1] * FADE)); a = np.asarray(im.split()[3]).astype(np.float32)
+            ramp = np.linspace(1, 0, fh) ** 1.4; a[-fh:] *= ramp[:, None]
+            im.putalpha(Image.fromarray(a.astype(np.uint8)))
         ar = im.size[1] / im.size[0]
         pw = PW * k; phh = pw * ar; px = X(437) - pw / 2; py = Y(PB) - phh
         tw = min(im.size[0], 3600) if W > 2000 else 1200
         im = im.resize((tw, round(tw * ar)), Image.LANCZOS)
         L.append('<g id="05_PHOTO_platter">'
-                 f'<ellipse id="photo_shadow" cx="{X(437):.1f}" cy="{Y(PB - 12):.1f}" rx="{pw*0.50:.1f}" ry="{38*k:.1f}" fill="url(#shadow)"/>'
-                 f'<image id="photo_platter_cutout" x="{px:.1f}" y="{py:.1f}" width="{pw:.1f}" height="{phh:.1f}" href="data:image/png;base64,{b64(im=im, fmt="PNG")}"/></g>')
+                 + ('' if CROPB > 0 else f'<ellipse id="photo_shadow" cx="{X(437):.1f}" cy="{Y(PB - 12):.1f}" rx="{pw*0.50:.1f}" ry="{38*k:.1f}" fill="url(#shadow)"/>')
+                 + f'<image id="photo_platter_cutout" x="{px:.1f}" y="{py:.1f}" width="{pw:.1f}" height="{phh:.1f}" href="data:image/png;base64,{b64(im=im, fmt="PNG")}"/></g>')
     else:
         L.append('<g id="05_PHOTO_platter"></g>')
 
