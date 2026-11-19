@@ -22,3 +22,7 @@ Polish (colour match to the red background, defringe, light wrap) and placement 
 
     python src/finish_cutout.py warped.png final.png [--ev -0.15 --warm 0.5 --contrast 0.25 --vib 0.2 --split 0.35 --choke 1 --defringe 6 --wrap 0.35]
     GLOW=0.8 SHADOW=1 PLATTER_DX=0 PLATTER_W=880 PLATTER_BOTTOM=995 python src/build.py out final photo final.png
+
+Close-up carousel, awards-poster style (translucent Oxblood band, stacked Cinzel name, Cormorant italic ingredients):
+
+    python src/carousel_band.py spec_band.json carousel_band     # spec format in the header of carousel_band.py
