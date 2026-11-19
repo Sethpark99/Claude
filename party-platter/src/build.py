@@ -25,10 +25,10 @@ CREAM = '#F6E6D8'
 BG = (90, 2, 2)                                     # sampled background red
 PANEL_LT, PANEL_DK = '#620B03', '#480001'
 
-FONTS = {'Cinzel': 'cinzel-latin-400-normal.woff2', 'Bodoni': 'bodoni-moda-latin-400-italic.woff2',
+FONTS = {'Cinzel': 'cinzel-latin-400-normal.woff2', 'CormI': 'cormorant-garamond-latin-500-italic.woff2',
          'Corm': 'cormorant-garamond-latin-500-normal.woff2'}
 FAM = {'Cinzel': 'font-family="Cinzel" font-weight="400"',
-       'Bodoni': 'font-family="Bodoni Moda" font-weight="400" font-style="italic"',
+       'CormI': 'font-family="Cormorant Garamond" font-weight="500" font-style="italic"',
        'Corm': 'font-family="Cormorant Garamond" font-weight="500"'}
 ITEMS = [['Vegetable Spring Rolls', 'Fried Dumplings', 'Deep-Fried Prawn Skewers'],
          ['Sweet & Spicy Chicken Skewers', 'Chicken Katsu Sandos', 'Bulgogi Sliders'],
@@ -114,9 +114,9 @@ def build(W, H, unit_w, unit_h, name, tex_px):
 
     # title + subtitle
     s, ls = fit('PARTY PLATTER', 'Cinzel', 570 * k, 0.03)
-    s2, ls2 = fit('Serves 5 people', 'Bodoni', 280 * k, 0.24)
+    s2, ls2 = fit('Serves 5 people', 'CormI', 280 * k, 0.24)
     L.append('<g id="04_title">' + text('title_party-platter', 'PARTY PLATTER', X(445), Y(172), 'Cinzel', s, 'url(#gold)', ls)
-             + text('subtitle_serves-5', 'Serves 5 people', X(420), Y(203), 'Bodoni', s2, CREAM, ls2) + '</g>')
+             + text('subtitle_serves-5', 'Serves 5 people', X(420), Y(203), 'CormI', s2, CREAM, ls2) + '</g>')
 
     # photo slot (empty): guides traced from the reference platter footprint; hide/delete before print
     if GUIDES:
@@ -168,7 +168,7 @@ def build(W, H, unit_w, unit_h, name, tex_px):
 
     def ff(f, fam, wt, st='normal'):
         return f"@font-face{{font-family:'{fam}';font-weight:{wt};font-style:{st};src:url(data:font/woff2;base64,{b64(os.path.join(HERE, FONTS[f]))}) format('woff2');}}"
-    style = ff('Cinzel', 'Cinzel', 400) + ff('Bodoni', 'Bodoni Moda', 400, 'italic') + ff('Corm', 'Cormorant Garamond', 500)
+    style = ff('Cinzel', 'Cinzel', 400) + ff('CormI', 'Cormorant Garamond', 500, 'italic') + ff('Corm', 'Cormorant Garamond', 500)
     svg = f'''<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="{unit_w}" height="{unit_h}" viewBox="0 0 {W} {H}">
 <defs><style>{style}</style>
 <linearGradient id="gold" gradientUnits="userSpaceOnUse" x1="{X(160):.0f}" y1="0" x2="{X(730):.0f}" y2="0"><stop offset="0" stop-color="{GOLD[0]}"/><stop offset="0.5" stop-color="{GOLD[1]}"/><stop offset="1" stop-color="{GOLD[2]}"/></linearGradient>

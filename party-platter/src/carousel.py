@@ -18,7 +18,7 @@ def crop45(path, cx, cy, zoom):
 
 def ff(f, fam, wt, st='normal'):
     return f"@font-face{{font-family:'{fam}';font-weight:{wt};font-style:{st};src:url(data:font/woff2;base64,{B.b64(os.path.join(B.HERE, B.FONTS[f]))}) format('woff2');}}"
-style = ff('Cinzel', 'Cinzel', 400) + ff('Bodoni', 'Bodoni Moda', 400, 'italic')
+style = ff('Cinzel', 'Cinzel', 400) + ff('CormI', 'Cormorant Garamond', 500, 'italic')
 
 for i, s in enumerate(spec, 1):
     ph = crop45(s['src'], s.get('cx', .5), s.get('cy', .5), s.get('zoom', 1.0))
@@ -31,7 +31,7 @@ for i, s in enumerate(spec, 1):
          '<g id="04_label">'
          + B.text('item_name', lab, W / 2, H - 150, 'Cinzel', size, 'url(#gold)', ls)
          + f'<line id="rule" x1="{W/2-120}" y1="{H-112}" x2="{W/2+120}" y2="{H-112}" stroke="{B.LINE}" stroke-width="1.5"/>'
-         + B.text('subline', 'Party Platter · Serves 5 people', W / 2, H - 62, 'Bodoni', 27, B.CREAM, 1)
+         + B.text('subline', 'Party Platter · Serves 5 people', W / 2, H - 62, 'CormI', 29, B.CREAM, 1)
          + '</g>']
     svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="{W}px" height="{H}px" viewBox="0 0 {W} {H}">
 <defs><style>{style}</style>
